@@ -1,0 +1,10 @@
+const express=require('express')
+const app=express.Router()
+const token_middleware=require('../middleware/admincheck')
+const client=require('../controller/ClientController')
+app.post("/api/client/register",client.client_register)
+app.get("/api/client/login",client.client_login)
+app.get("/api/client/get",client.client_fetch)
+app.post("/api/client/follow",token_middleware.admin_check,client.client_follow)
+app.delete("/api/client/delete",token_middleware.admin_check,client.client_delete)
+module.exports=app
