@@ -42,21 +42,47 @@ module.exports.client_login=asyncHandler(async(req,res)=>{
 })
 module.exports.client_follow = asyncHandler(async (req, res) => {
   await Connect();
-  const client = await ClientModel.findOne({ _id: req.body.id });
-
-  if (client !== null) {
-    const followerIndex = client.followers.indexOf(req.body.follower);
-
-    if (followerIndex === -1) {
-      client.followers.push(req.body.follower);
+  
+  const { id, follower } = req.body;
+  
+  console.log(`Following action for Client ID: ${id} by Follower ID: ${follower}`);
+  
+  // Find the client to be followed/unfollowed
+  const client = await ClientModel.findOne({ _id: id });
+  // Find the follower client
+  const followerClient = await ClientModel.findOne({ _id: follower });
+  
+  console.log('Client:', client);
+  console.log('Follower Client:', followerClient);
+  
+  if (client !== null && followerClient !== null) {
+    const followerIndex = client.followers.indexOf(follower);
+    const followingIndex = followerClient.following.indexOf(id);
+    
+    console.log('Follower Index:', followerIndex);
+    console.log('Following Index:', followingIndex);
+    
+    if (followerIndex === -1 && followingIndex === -1) {
+      // Add follower to the client
+      client.followers.push(follower);
+      // Add following to the follower client
+      followerClient.following.push(id);
       await client.save();
+      await followerClient.save();
+      console.log('Followed');
       res.send({ message: "followed" });
     } else {
+      // Remove follower from the client
       client.followers.splice(followerIndex, 1);
+      // Remove following from the follower client
+      followerClient.following.splice(followingIndex, 1);
       await client.save();
+      await followerClient.save();
+      console.log('Unfollowed');
       res.send({ message: "unfollowed" });
     }
   } else {
+    console.log('Invalid IDs');
     res.send({ message: "wrong Id" });
   }
 });

@@ -7,7 +7,7 @@ const ClientSchema = mongoose.Schema({
   phone: { type: String, required: true },
   followers:{type:Array},
   following:{type:Array}
-});
+}, { timestamps: true });
 var ClientModel
 try {
     ClientModel=mongoose.model("Client",ClientSchema)

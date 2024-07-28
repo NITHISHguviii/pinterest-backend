@@ -8,9 +8,9 @@ module.exports.image_upload = asyncHandler(async (req, res) => {
   await Connect();
   
   try {
-    const client = await ClientModel.findOne({ email: req.body.email });
-
-    if (client !== null) {
+    const client = await ClientModel.findOne({ _id: req.body.user });
+    console.log(client)
+    if (client) {
       const upload = new ImageModel(req.body);
       await upload.save();
       return res.send({ message: "image uploaded", data: upload });
@@ -23,17 +23,48 @@ module.exports.image_upload = asyncHandler(async (req, res) => {
 });
 
 
-module.exports.image_get=asyncHandler(async(req,res)=>{
-  Connect()
-  const images=await ImageModel.find({})
-  return res.send({data:images})
-})
+module.exports.image_get = asyncHandler(async (req, res) => {
+  Connect();
+
+  // Extract filter query parameters from the request
+  const { user, type, title, minLikes, maxLikes } = req.query;
+
+  // Build the filter object
+  let filter = {};
+
+  if (user) {
+    filter.user = user;
+  }
+
+  if (type) {
+    filter.type = type;
+  }
+
+  if (title) {
+    // Using a case-insensitive regex for partial match on title
+    filter.title = { $regex: title, $options: 'i' };
+  }
+
+  if (minLikes) {
+    filter.likes = { $gte: parseInt(minLikes) };
+  }
+
+  if (maxLikes) {
+    if (!filter.likes) {
+      filter.likes = {};
+    }
+    filter.likes.$lte = parseInt(maxLikes);
+  }
+
+  const images = await ImageModel.find(filter).populate('user');
+  return res.send(images);
+});
 
 
 module.exports.image_like = asyncHandler(async (req, res) => {
   await Connect();
   const image = await ImageModel.findOne({ _id: req.body.id });
-
+  console.log(req.body)
   if (image !== null) {
     const userIndex = image.likes.indexOf(req.body.user);
 
