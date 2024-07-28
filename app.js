@@ -7,7 +7,7 @@ const ClientRoutes = require("./Routes/client");
 const Image = require("./Routes/image");
 require("dotenv").config();
 const corsOptions = {
-  origin: "https://pinterest-backend-1wai.onrender.com", // Replace with your frontend domain
+  origin: "https://pinterest-clone-nithish.netlify.app", // Replace with your frontend domain
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
