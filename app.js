@@ -6,13 +6,7 @@ const AdminRoutes = require("./Routes/admin");
 const ClientRoutes = require("./Routes/client");
 const Image = require("./Routes/image");
 require("dotenv").config();
-const corsOptions = {
-  origin: "https://pinterest-clone-nithish.netlify.app", // Replace with your frontend domain
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-app.use(cors(corsOptions));
-app.options("*", cors()); // Enable pre-flight requests for all routes
+app.use(cors());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(AdminRoutes);
